@@ -4,7 +4,7 @@ PROJECT ?= data-platform
 
 export AWS_REGION PROJECT
 
-.PHONY: init plan apply destroy kubeconfig mirror-ecr tfvars-from-ecr ch-port hms-port build-images build-hive build-spark-ingest build-spark-aggregate ecr-login ecr-list help
+.PHONY: init plan apply destroy kubeconfig hms-port build-images build-hive build-spark-ingest build-spark-aggregate ecr-login ecr-list help
 
 init:
 	terraform -chdir=./ init
@@ -20,15 +20,6 @@ destroy:
 
 kubeconfig:
 	aws eks update-kubeconfig --region $(AWS_REGION) --name $(PROJECT)-eks
-
-mirror-ecr:
-	./scripts/mirror_to_ecr.sh
-
-tfvars-from-ecr:
-	./scripts/generate_tfvars_from_ecr.sh
-
-ch-port:
-	./scripts/ch_port_forward.sh
 
 hms-port:
 	kubectl -n hive port-forward svc/hive-metastore 9083:9083
@@ -103,7 +94,6 @@ help:
 	@echo ""
 	@echo "☸️   Kubernetes:"
 	@echo "  kubeconfig        Configure kubectl for EKS cluster"
-	@echo "  ch-port           Port-forward ClickHouse (8123:8123, 9000:9000)"
 	@echo "  hms-port          Port-forward Hive Metastore (9083:9083)"
 	@echo ""
 	@echo "🐳 Docker Images:"
@@ -114,8 +104,6 @@ help:
 	@echo "  build-images-dry  Show what would be built (dry run)"
 	@echo ""
 	@echo "📦 ECR Management:"
-	@echo "  mirror-ecr        Mirror baseline images to ECR"
-	@echo "  tfvars-from-ecr   Generate tfvars from ECR repositories"
 	@echo "  ecr-login         Login to AWS ECR"
 	@echo "  ecr-list          List all ECR repositories"
 	@echo "  ecr-images REPO=name  List images in specific repository"

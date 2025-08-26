@@ -87,13 +87,15 @@ make apply
 make kubeconfig
 ```
 
-### 5. Mirror Container Images to ECR
+### 5. Build and Push Custom Images
 ```bash
-# Mirror baseline images (Spark, Hive, Spark Operator)
-make mirror-ecr
+# Build and push all custom Docker images to ECR
+make build-images
 
-# Generate terraform.tfvars with ECR image references
-make tfvars-from-ecr
+# Or build individual images as needed
+make build-hive              # Hive Metastore
+make build-spark-ingest      # Spark ingestion
+make build-spark-aggregate   # Spark aggregation
 ```
 
 ### 6. Deploy Kubernetes Resources (Phase 2)
@@ -104,21 +106,6 @@ make plan
 make apply
 ```
 
-### 7. Build and Push Custom Images
-The platform includes custom Docker images for optimized log processing:
-
-```bash
-# Build and push all custom images
-make build-images
-
-# Or build individual images
-make build-hive              # Hive Metastore 2.3.9 (compatible with Spark 3.5.1)
-make build-spark-ingest      # Spark ingestion job with Iceberg 1.6.1
-make build-spark-aggregate   # Spark aggregation job for analytics
-
-# Preview what would be built (dry run)
-make build-images-dry
-```
 
 ## 🛠️ Available Commands
 
@@ -142,18 +129,12 @@ make destroy
 # Configure local kubeconfig for EKS cluster
 make kubeconfig
 
-# Port-forward ClickHouse (HTTP:8123, Native:9000)
-make ch-port
-
 # Port-forward Hive Metastore (Thrift:9083)
 make hms-port
 ```
 
 ### Container Image Management
 ```bash
-# Mirror baseline images to ECR
-make mirror-ecr
-
 # Build and push all custom images (recommended)
 make build-images
 
@@ -169,9 +150,6 @@ make ecr-images REPO=log-ingest-spark  # List images in specific repo
 
 # Preview build operations (dry run)
 make build-images-dry
-
-# Generate tfvars from existing ECR repositories
-make tfvars-from-ecr
 ```
 
 ## ⚙️ Configuration
